@@ -1,14 +1,13 @@
 package part3_graphs
 
-import akka.actor.ActorSystem
-import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, MergePreferred, RunnableGraph, Sink, Source, Zip, ZipWith}
-import akka.stream.{ActorMaterializer, ClosedShape, OverflowStrategy, UniformFanInShape}
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, MergePreferred, RunnableGraph, Sink, Source, Zip, ZipWith}
+import org.apache.pekko.stream.{ActorMaterializer, ClosedShape, OverflowStrategy, UniformFanInShape}
 
 object GraphCycles extends App {
 
-  implicit val system = ActorSystem("GraphCycles")
-  // this line needs to be here for Akka < 2.6
-  // implicit val materializer: ActorMaterializer = ActorMaterializer()
+  implicit val system: ActorSystem = ActorSystem("GraphCycles")
+  // the ActorSystem also acts as an ActorMaterializer for stream components
 
   val accelerator = GraphDSL.create() { implicit builder =>
     import GraphDSL.Implicits._
@@ -92,7 +91,7 @@ object GraphCycles extends App {
   val fibonacciGenerator = GraphDSL.create() { implicit builder =>
     import GraphDSL.Implicits._
 
-    val zip = builder.add(Zip[BigInt, BigInt])
+    val zip = builder.add(Zip[BigInt, BigInt]())
     val mergePreferred = builder.add(MergePreferred[(BigInt, BigInt)](1))
     val fiboLogic = builder.add(Flow[(BigInt, BigInt)].map { pair =>
       val last = pair._1

@@ -1,14 +1,13 @@
 package part3_graphs
 
-import akka.actor.ActorSystem
-import akka.stream.{ActorMaterializer, BidiShape, ClosedShape}
-import akka.stream.scaladsl.{Flow, GraphDSL, RunnableGraph, Sink, Source}
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.{ActorMaterializer, BidiShape, ClosedShape}
+import org.apache.pekko.stream.scaladsl.{Flow, GraphDSL, RunnableGraph, Sink, Source}
 
 object BidirectionalFlows extends App {
 
-  implicit val system = ActorSystem("BidirectionalFlows")
-  // this line needs to be here for Akka < 2.6
-  // implicit val materializer: ActorMaterializer = ActorMaterializer()
+  implicit val system: ActorSystem = ActorSystem("BidirectionalFlows")
+  // the ActorSystem also acts as an ActorMaterializer for stream components
 
   /*
     Example: cryptography
@@ -25,7 +24,7 @@ object BidirectionalFlows extends App {
     BidiShape.fromFlows(encryptionFlowShape, decryptionFlowShape)
   }
 
-  val unencryptedStrings = List("akka", "is", "awesome", "testing", "bidirectional", "flows")
+  val unencryptedStrings = List("Pekko", "is", "awesome", "testing", "bidirectional", "flows")
   val unencryptedSource = Source(unencryptedStrings)
   val encryptedSource = Source(unencryptedStrings.map(encrypt(3)))
 

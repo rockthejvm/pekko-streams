@@ -1,21 +1,21 @@
 package part4_techniques
 
 import java.util.Date
-
-import akka.actor.{Actor, ActorLogging, ActorSystem, Props}
-import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.{Sink, Source}
-import akka.util.Timeout
+import org.apache.pekko.actor.{Actor, ActorLogging, ActorSystem, Props}
+import org.apache.pekko.dispatch.MessageDispatcher
+import org.apache.pekko.stream.ActorMaterializer
+import org.apache.pekko.stream.scaladsl.{Sink, Source}
+import org.apache.pekko.util.Timeout
 
 import scala.concurrent.Future
 
 object IntegratingWithExternalServices extends App {
 
-  implicit val system = ActorSystem("IntegratingWithExternalServices")
-  // this line needs to be here for Akka < 2.6
-  // implicit val materializer: ActorMaterializer = ActorMaterializer()
+  implicit val system: ActorSystem = ActorSystem("IntegratingWithExternalServices")
+  // the ActorSystem also acts as an ActorMaterializer for stream components
+
   //  import system.dispatcher // not recommended in practice for mapAsync
-  implicit val dispatcher = system.dispatchers.lookup("dedicated-dispatcher")
+  implicit val dispatcher: MessageDispatcher = system.dispatchers.lookup("dedicated-dispatcher")
 
 
   def genericExtService[A, B](element: A): Future[B] = ???
@@ -24,9 +24,9 @@ object IntegratingWithExternalServices extends App {
   case class PagerEvent(application: String, description: String, date: Date)
 
   val eventSource = Source(List(
-    PagerEvent("AkkaInfra", "Infrastructure broke", new Date),
+    PagerEvent("PekkoInfra", "Infrastructure broke", new Date),
     PagerEvent("FastDataPipeline", "Illegal elements in the data pipeline", new Date),
-    PagerEvent("AkkaInfra", "A service stopped responding", new Date),
+    PagerEvent("PekkoInfra", "A service stopped responding", new Date),
     PagerEvent("SuperFrontend", "A button doesn't work", new Date)
   ))
 
@@ -52,7 +52,7 @@ object IntegratingWithExternalServices extends App {
     }
   }
 
-  val infraEvents = eventSource.filter(_.application == "AkkaInfra")
+  val infraEvents = eventSource.filter(_.application == "PekkoInfra")
   val pagedEngineerEmails = infraEvents.mapAsync(parallelism = 1)(event => PagerService.processEvent(event))
   // guarantees the relative order of elements
   val pagedEmailsSink = Sink.foreach[String](email => println(s"Successfully sent notification to $email"))
@@ -85,10 +85,10 @@ object IntegratingWithExternalServices extends App {
     }
   }
 
-  import akka.pattern.ask
+  import org.apache.pekko.pattern.ask
   import scala.concurrent.duration._
-  implicit val timeout = Timeout(3.seconds)
-  val pagerActor = system.actorOf(Props[PagerActor], "pagerActor")
+  implicit val timeout: Timeout = Timeout(3.seconds)
+  val pagerActor = system.actorOf(Props[PagerActor](), "pagerActor")
   val alternativePagedEngineerEmails = infraEvents.mapAsync(parallelism = 4)(event => (pagerActor ? event).mapTo[String])
   alternativePagedEngineerEmails.to(pagedEmailsSink).run()
 

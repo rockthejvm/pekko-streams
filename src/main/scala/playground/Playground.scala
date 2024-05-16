@@ -1,22 +1,21 @@
 package playground
 
-import akka.NotUsed
-import akka.actor.ActorSystem
-import akka.stream.ActorAttributes.supervisionStrategy
-import akka.stream.Supervision.resumingDecider
-import akka.stream.{ActorMaterializer, Attributes, FlowShape, Inlet, Outlet}
-import akka.stream.scaladsl.{Flow, Keep, RunnableGraph, Sink, Source}
-import akka.stream.stage.{GraphStage, GraphStageLogic, GraphStageWithMaterializedValue, InHandler, OutHandler}
-import akka.testkit.TestKit
+import org.apache.pekko.NotUsed
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.ActorAttributes.supervisionStrategy
+import org.apache.pekko.stream.Supervision.resumingDecider
+import org.apache.pekko.stream.{ActorMaterializer, Attributes, FlowShape, Inlet, Outlet}
+import org.apache.pekko.stream.scaladsl.{Flow, Keep, RunnableGraph, Sink, Source}
+import org.apache.pekko.stream.stage.{GraphStage, GraphStageLogic, GraphStageWithMaterializedValue, InHandler, OutHandler}
+import org.apache.pekko.testkit.TestKit
 
 import scala.concurrent.{Future, Promise}
 
 object Playground extends App {
 
-  implicit val system = ActorSystem("AkkaStreamsDemo")
-  // this line needs to be here for Akka < 2.6
-  // implicit val materializer: ActorMaterializer = ActorMaterializer()
-  import system.dispatcher
+  implicit val system: ActorSystem = ActorSystem("PekkoStreamsDemo")
+  // the ActorSystem also acts as an ActorMaterializer for stream components
+    import system.dispatcher
 
   val source = Source(1 to 10)
   val flow = Flow[Int].map(x => { println(x); x })
@@ -30,7 +29,7 @@ object Playground extends App {
   sum.onComplete(x => println(s"Sum: $x"))
 
   val independentFlow = Flow[String].map(_.reverse)
-  import akka.stream.scaladsl.FlowWithContext
+  import org.apache.pekko.stream.scaladsl.FlowWithContext
 
   val independentFlowWithContext: FlowWithContext[String, Int, String, Int, NotUsed] =
     independentFlow.asFlowWithContext[String, Int, Int]((string, ctx) => string)(string => 0)

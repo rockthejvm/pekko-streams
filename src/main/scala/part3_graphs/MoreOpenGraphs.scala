@@ -2,15 +2,14 @@ package part3_graphs
 
 import java.util.Date
 
-import akka.actor.ActorSystem
-import akka.stream.{ActorMaterializer, ClosedShape, FanOutShape2, UniformFanInShape}
-import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, RunnableGraph, Sink, Source, ZipWith}
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.{ActorMaterializer, ClosedShape, FanOutShape2, UniformFanInShape}
+import org.apache.pekko.stream.scaladsl.{Broadcast, Flow, GraphDSL, RunnableGraph, Sink, Source, ZipWith}
 
 object MoreOpenGraphs extends App {
 
-  implicit val system = ActorSystem("MoreOpenGraphs")
-  // this line needs to be here for Akka < 2.6
-  // implicit val materializer: ActorMaterializer = ActorMaterializer()
+  implicit val system: ActorSystem = ActorSystem("MoreOpenGraphs")
+  // the ActorSystem also acts as an ActorMaterializer for stream components
 
   /*
     Example: Max3 operator

@@ -1,9 +1,9 @@
 package part5_advanced
 
-import akka.actor.ActorSystem
-import akka.stream.scaladsl.{Flow, Keep, Sink, Source}
-import akka.stream._
-import akka.stream.stage._
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.scaladsl.{Flow, Keep, Sink, Source}
+import org.apache.pekko.stream._
+import org.apache.pekko.stream.stage._
 
 import scala.collection.mutable
 import scala.concurrent.{Future, Promise}
@@ -11,9 +11,8 @@ import scala.util.{Failure, Random, Success}
 
 object CustomOperators extends App {
 
-  implicit val system = ActorSystem("CustomOperators")
-  // this line needs to be here for Akka < 2.6
-  // implicit val materializer: ActorMaterializer = ActorMaterializer()
+  implicit val system: ActorSystem = ActorSystem("CustomOperators")
+  // the ActorSystem also acts as an ActorMaterializer for stream components
 
   // 1 - a custom source which emits random numbers until canceled
 

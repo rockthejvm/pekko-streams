@@ -1,14 +1,13 @@
 package part2_primer
 
-import akka.actor.{Actor, ActorSystem, Props}
-import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.{Flow, Sink, Source}
+import org.apache.pekko.actor.{Actor, ActorSystem, Props}
+import org.apache.pekko.stream.ActorMaterializer
+import org.apache.pekko.stream.scaladsl.{Flow, Sink, Source}
 
 object OperatorFusion extends App {
 
-  implicit val system = ActorSystem("OperatorFusion")
-  // this line needs to be here for Akka < 2.6
-  // implicit val materializer: ActorMaterializer = ActorMaterializer()
+  implicit val system: ActorSystem = ActorSystem("OperatorFusion")
+  // the ActorSystem also acts as an ActorMaterializer for stream components
 
   val simpleSource = Source(1 to 1000)
   val simpleFlow = Flow[Int].map(_ + 1)
@@ -30,7 +29,7 @@ object OperatorFusion extends App {
         println(y)
     }
   }
-  val simpleActor = system.actorOf(Props[SimpleActor])
+  val simpleActor = system.actorOf(Props[SimpleActor]())
   //  (1 to 1000).foreach(simpleActor ! _)
 
   // complex flows:

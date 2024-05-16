@@ -1,17 +1,16 @@
 package part2_primer
 
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.{Flow, Keep, Sink, Source}
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.ActorMaterializer
+import org.apache.pekko.stream.scaladsl.{Flow, Keep, Sink, Source}
 
 import scala.util.{Failure, Success}
 
 object MaterializingStreams extends App {
 
-  implicit val system = ActorSystem("MaterializingStreams")
-  // this line needs to be here for Akka < 2.6
-  // implicit val materializer: ActorMaterializer = ActorMaterializer()
-  import system.dispatcher
+  implicit val system: ActorSystem = ActorSystem("MaterializingStreams")
+  // the ActorSystem also acts as an ActorMaterializer for stream components
+    import system.dispatcher
 
   val simpleGraph = Source(1 to 10).to(Sink.foreach(println))
   //  val simpleMaterializedValue = simpleGraph.run()
@@ -52,7 +51,7 @@ object MaterializingStreams extends App {
   val f2 = Source(1 to 10).runWith(Sink.last)
 
   val sentenceSource = Source(List(
-    "Akka is awesome",
+    "Pekko is awesome",
     "I love streams",
     "Materialized values are killing me"
   ))

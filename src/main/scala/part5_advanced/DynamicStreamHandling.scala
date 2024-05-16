@@ -1,17 +1,16 @@
 package part5_advanced
 
-import akka.actor.ActorSystem
-import akka.stream.scaladsl.{BroadcastHub, Keep, MergeHub, Sink, Source}
-import akka.stream.{ActorMaterializer, KillSwitches}
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.scaladsl.{BroadcastHub, Keep, MergeHub, Sink, Source}
+import org.apache.pekko.stream.{ActorMaterializer, KillSwitches}
 
 import scala.concurrent.duration._
 
 object DynamicStreamHandling extends App {
 
-  implicit val system = ActorSystem("DynamicStreamHandling")
-  // this line needs to be here for Akka < 2.6
-  // implicit val materializer: ActorMaterializer = ActorMaterializer()
-  import system.dispatcher
+  implicit val system: ActorSystem = ActorSystem("DynamicStreamHandling")
+  // the ActorSystem also acts as an ActorMaterializer for stream components
+    import system.dispatcher
 
   // #1: Kill Switch
 
@@ -69,7 +68,7 @@ object DynamicStreamHandling extends App {
   subscriberPort.runWith(Sink.foreach(e => println(s"I received: $e")))
   subscriberPort.map(string => string.length).runWith(Sink.foreach(n => println(s"I got a number: $n")))
 
-  Source(List("Akka", "is", "amazing")).runWith(publisherPort)
+  Source(List("Pekko", "is", "amazing")).runWith(publisherPort)
   Source(List("I", "love", "Scala")).runWith(publisherPort)
   Source.single("STREEEEEEAMS").runWith(publisherPort)
 

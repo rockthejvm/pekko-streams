@@ -1,18 +1,17 @@
 package part5_advanced
 
-import akka.NotUsed
-import akka.actor.ActorSystem
-import akka.stream.scaladsl.{Balance, GraphDSL, Merge, RunnableGraph, Sink, Source}
-import akka.stream._
+import org.apache.pekko.NotUsed
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.scaladsl.{Balance, GraphDSL, Merge, RunnableGraph, Sink, Source}
+import org.apache.pekko.stream._
 
 import scala.collection.immutable
 import scala.concurrent.duration._
 
 object CustomGraphShapes extends App {
 
-  implicit val system = ActorSystem("CustomGraphShapes")
-  // this line needs to be here for Akka < 2.6
-  // implicit val materializer: ActorMaterializer = ActorMaterializer()
+  implicit val system: ActorSystem = ActorSystem("CustomGraphShapes")
+  // the ActorSystem also acts as an ActorMaterializer for stream components
 
   // balance 2x3 shape
   case class Balance2x3 (

@@ -1,16 +1,15 @@
 package part2_primer
 
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.{Flow, Sink, Source}
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.ActorMaterializer
+import org.apache.pekko.stream.scaladsl.{Flow, Sink, Source}
 
 import scala.concurrent.Future
 
 object FirstPrinciples extends App {
 
-  implicit val system = ActorSystem("FirstPrinciples")
-  // this line needs to be here for Akka < 2.6
-  // implicit val materializer: ActorMaterializer = ActorMaterializer()
+  implicit val system: ActorSystem = ActorSystem("FirstPrinciples")
+  // the ActorSystem also acts as an ActorMaterializer for stream components
 
   // sources
   val source = Source(1 to 10)
@@ -38,7 +37,7 @@ object FirstPrinciples extends App {
   val finiteSource = Source.single(1)
   val anotherFiniteSource = Source(List(1, 2, 3))
   val emptySource = Source.empty[Int]
-  val infiniteSource = Source(Stream.from(1)) // do not confuse an Akka stream with a "collection" Stream
+  val infiniteSource = Source(Stream.from(1)) // do not confuse an Pekko stream with a "collection" Stream
   import scala.concurrent.ExecutionContext.Implicits.global
   val futureSource = Source.fromFuture(Future(42))
 
@@ -69,7 +68,7 @@ object FirstPrinciples extends App {
     * Exercise: create a stream that takes the names of persons, then you will keep the first 2 names with length > 5 characters.
     *
     */
-  val names = List("Alice", "Bob", "Charlie", "David", "Martin", "AkkaStreams")
+  val names = List("Alice", "Bob", "Charlie", "David", "Martin", "PekkoStreams")
   val nameSource = Source(names)
   val longNameFlow = Flow[String].filter(name => name.length > 5)
   val limitFlow = Flow[String].take(2)

@@ -1,18 +1,17 @@
 package part4_techniques
 
-import akka.actor.ActorSystem
-import akka.stream.Supervision.{Resume, Stop}
-import akka.stream.{ActorAttributes, ActorMaterializer}
-import akka.stream.scaladsl.{RestartSource, Sink, Source}
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.Supervision.{Resume, Stop}
+import org.apache.pekko.stream.{ActorAttributes, ActorMaterializer}
+import org.apache.pekko.stream.scaladsl.{RestartSource, Sink, Source}
 
 import scala.concurrent.duration._
 import scala.util.Random
 
 object FaultTolerance extends App {
 
-  implicit val system = ActorSystem("FaultTolerance")
-  // this line needs to be here for Akka < 2.6
-  // implicit val materializer: ActorMaterializer = ActorMaterializer()
+  implicit val system: ActorSystem = ActorSystem("FaultTolerance")
+  // the ActorSystem also acts as an ActorMaterializer for stream components
 
   // 1 - logging
   val faultySource = Source(1 to 10).map(e => if (e == 6) throw new RuntimeException else e)

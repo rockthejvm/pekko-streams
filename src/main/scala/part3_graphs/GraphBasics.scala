@@ -1,15 +1,14 @@
 package part3_graphs
 
-import akka.NotUsed
-import akka.actor.ActorSystem
-import akka.stream.{ActorMaterializer, ClosedShape}
-import akka.stream.scaladsl.{Balance, Broadcast, Flow, GraphDSL, Merge, RunnableGraph, Sink, Source, Zip}
+import org.apache.pekko.NotUsed
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.{ActorMaterializer, ClosedShape}
+import org.apache.pekko.stream.scaladsl.{Balance, Broadcast, Flow, GraphDSL, Merge, RunnableGraph, Sink, Source, Zip}
 
 object GraphBasics extends App {
 
-  implicit val system = ActorSystem("GraphBasics")
-  // this line needs to be here for Akka < 2.6
-  // implicit val materializer: ActorMaterializer = ActorMaterializer()
+  implicit val system: ActorSystem = ActorSystem("GraphBasics")
+  // the ActorSystem also acts as an ActorMaterializer for stream components
 
   val input = Source(1 to 1000)
   val incrementer = Flow[Int].map(x => x + 1) // hard computation
@@ -23,7 +22,7 @@ object GraphBasics extends App {
 
       // step 2 - add the necessary components of this graph
       val broadcast = builder.add(Broadcast[Int](2)) // fan-out operator
-      val zip = builder.add(Zip[Int, Int]) // fan-in operator
+      val zip = builder.add(Zip[Int, Int]()) // fan-in operator
 
       // step 3 - tying up the components
       input ~> broadcast

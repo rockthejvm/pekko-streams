@@ -1,10 +1,10 @@
 package part4_techniques
 
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.{Flow, Keep, Sink, Source}
-import akka.stream.testkit.scaladsl.{TestSink, TestSource}
-import akka.testkit.{TestKit, TestProbe}
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.ActorMaterializer
+import org.apache.pekko.stream.scaladsl.{Flow, Keep, Sink, Source}
+import org.apache.pekko.stream.testkit.scaladsl.{TestSink, TestSource}
+import org.apache.pekko.testkit.{TestKit, TestProbe}
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -13,13 +13,12 @@ import scala.util.{Failure, Success}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike
 
-class TestingStreamsSpec extends TestKit(ActorSystem("TestingAkkaStreams"))
+class TestingStreamsSpec extends TestKit(ActorSystem("TestingPekkoStreams"))
   with AnyWordSpecLike
   with BeforeAndAfterAll {
 
-  // this line needs to be here for Akka < 2.6
-  // // this line needs to be here for Akka < 2.6
-  // implicit val materializer: ActorMaterializer = ActorMaterializer()
+  // the ActorSystem also acts as an ActorMaterializer for stream components
+  // // the ActorSystem also acts as an ActorMaterializer for stream components
 
   override def afterAll(): Unit = TestKit.shutdownActorSystem(system)
 
@@ -36,7 +35,7 @@ class TestingStreamsSpec extends TestKit(ActorSystem("TestingAkkaStreams"))
     }
 
     "integrate with test actors via materialized values" in {
-      import akka.pattern.pipe
+      import org.apache.pekko.pattern.pipe
       import system.dispatcher
 
       val simpleSource = Source(1 to 10)

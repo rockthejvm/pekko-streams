@@ -2,15 +2,14 @@ package part4_techniques
 
 import java.util.Date
 
-import akka.actor.ActorSystem
-import akka.stream.{ActorMaterializer, OverflowStrategy}
-import akka.stream.scaladsl.{Flow, Sink, Source}
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.{ActorMaterializer, OverflowStrategy}
+import org.apache.pekko.stream.scaladsl.{Flow, Sink, Source}
 
 object AdvancedBackpressure extends App {
 
-  implicit val system = ActorSystem("AdvancedBackpressure")
-  // this line needs to be here for Akka < 2.6
-  // implicit val materializer: ActorMaterializer = ActorMaterializer()
+  implicit val system: ActorSystem = ActorSystem("AdvancedBackpressure")
+  // the ActorSystem also acts as an ActorMaterializer for stream components
 
   // control backpressure
   val controlledFlow = Flow[Int].map(_ * 2).buffer(10, OverflowStrategy.dropHead)

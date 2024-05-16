@@ -1,19 +1,19 @@
 package part5_advanced
 
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.{Keep, Sink, Source}
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.ActorMaterializer
+import org.apache.pekko.stream.scaladsl.{Keep, Sink, Source}
 
 import scala.util.{Failure, Success}
 
 object Substreams extends App {
 
-  implicit val system = ActorSystem("Substreams")
-  implicit val materialized = ActorMaterializer()
-  import system.dispatcher
+  implicit val system: ActorSystem = ActorSystem("Substreams")
+  // the ActorSystem also acts as an ActorMaterializer for stream components
+    import system.dispatcher
 
   // 1 - grouping a stream by a certain function
-  val wordsSource = Source(List("Akka", "is", "amazing", "learning", "substreams"))
+  val wordsSource = Source(List("Pekko", "is", "amazing", "learning", "substreams"))
   val groups = wordsSource.filter(_.nonEmpty).groupBy(30, _.toLowerCase().charAt(0))
 
   groups.to(Sink.fold(0)((count, word) => {
@@ -25,7 +25,7 @@ object Substreams extends App {
 
   // 2 - merge substreams back
   val textSource = Source(List(
-    "I love Akka Streams",
+    "I love Pekko Streams",
     "this is amazing",
     "learning from Rock the JVM"
   ))
@@ -45,7 +45,7 @@ object Substreams extends App {
   // 3 - splitting a stream into substreams, when a condition is met
 
   val text =
-    "I love Akka Streams\n" +
+    "I love Pekko Streams\n" +
     "this is amazing\n" +
     "learning from Rock the JVM\n"
 

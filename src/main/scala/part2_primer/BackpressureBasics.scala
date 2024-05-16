@@ -1,15 +1,14 @@
 package part2_primer
 
-import akka.actor.ActorSystem
-import akka.stream.{ActorMaterializer, OverflowStrategy}
-import akka.stream.scaladsl.{Flow, Sink, Source}
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.{ActorMaterializer, OverflowStrategy}
+import org.apache.pekko.stream.scaladsl.{Flow, Sink, Source}
 
 object BackpressureBasics extends App {
 
-  implicit val system = ActorSystem("BackpressureBasics")
-  // this line needs to be here for Akka < 2.6
-  // implicit val materializer: ActorMaterializer = ActorMaterializer()
-
+  implicit val system: ActorSystem = ActorSystem("BackpressureBasics")
+  // the ActorSystem also acts as an ActorMaterializer for stream components
+  
   val fastSource = Source(1 to 1000)
   val slowSink = Sink.foreach[Int] { x =>
     // simulate a long processing

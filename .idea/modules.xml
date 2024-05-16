@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/akka-streams.iml" filepath="$PROJECT_DIR$/.idea/modules/akka-streams.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/akka-streams-build.iml" filepath="$PROJECT_DIR$/.idea/modules/akka-streams-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/pekko-streams.iml" filepath="$PROJECT_DIR$/.idea/modules/pekko-streams.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/pekko-streams-build.iml" filepath="$PROJECT_DIR$/.idea/modules/pekko-streams-build.iml" />
     </modules>
   </component>
 </project>

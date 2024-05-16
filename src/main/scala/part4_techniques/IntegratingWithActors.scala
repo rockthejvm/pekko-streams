@@ -1,17 +1,16 @@
 package part4_techniques
 
-import akka.actor.{Actor, ActorLogging, ActorSystem, Props}
-import akka.stream.{ActorMaterializer, OverflowStrategy}
-import akka.stream.scaladsl.{Flow, Sink, Source}
-import akka.util.Timeout
+import org.apache.pekko.actor.{Actor, ActorLogging, ActorSystem, Props}
+import org.apache.pekko.stream.{ActorMaterializer, OverflowStrategy}
+import org.apache.pekko.stream.scaladsl.{Flow, Sink, Source}
+import org.apache.pekko.util.Timeout
 
 import scala.concurrent.duration._
 
 object IntegratingWithActors extends App {
 
-  implicit val system = ActorSystem("IntegratingWithActors")
-  // this line needs to be here for Akka < 2.6
-  // implicit val materializer: ActorMaterializer = ActorMaterializer()
+  implicit val system: ActorSystem = ActorSystem("IntegratingWithActors")
+  // the ActorSystem also acts as an ActorMaterializer for stream components
 
   class SimpleActor extends Actor with ActorLogging {
     override def receive: Receive = {
@@ -25,12 +24,12 @@ object IntegratingWithActors extends App {
     }
   }
 
-  val simpleActor = system.actorOf(Props[SimpleActor], "simpleActor")
+  val simpleActor = system.actorOf(Props[SimpleActor](), "simpleActor")
 
   val numbersSource = Source(1 to 10)
 
   // actor as a flow
-  implicit val timeout = Timeout(2.seconds)
+  implicit val timeout: Timeout = Timeout(2.seconds)
   val actorBasedFlow = Flow[Int].ask[Int](parallelism = 4)(simpleActor)
 
   //  numbersSource.via(actorBasedFlow).to(Sink.ignore).run()
@@ -43,7 +42,7 @@ object IntegratingWithActors extends App {
   val materializedActorRef = actorPoweredSource.to(Sink.foreach[Int](number => println(s"Actor powered flow got number: $number"))).run()
   materializedActorRef ! 10
   // terminating the stream
-  materializedActorRef ! akka.actor.Status.Success("complete")
+  materializedActorRef ! org.apache.pekko.actor.Status.Success("complete")
 
   /*
     Actor as a destination/sink
@@ -73,7 +72,7 @@ object IntegratingWithActors extends App {
         sender() ! StreamAck
     }
   }
-  val destinationActor = system.actorOf(Props[DestinationActor], "destinationActor")
+  val destinationActor = system.actorOf(Props[DestinationActor](), "destinationActor")
 
   val actorPoweredSink = Sink.actorRefWithAck[Int](
     destinationActor,

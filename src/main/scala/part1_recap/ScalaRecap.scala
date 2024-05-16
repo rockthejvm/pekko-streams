@@ -80,14 +80,14 @@ object ScalaRecap extends App {
   // based on pattern matching!
 
   // type aliases
-  type AkkaReceive = PartialFunction[Any, Unit]
-  def receive: AkkaReceive = {
+  type PekkoReceive = PartialFunction[Any, Unit]
+  def receive: PekkoReceive = {
     case 1 => println("hello!")
     case _ => println("confused...")
   }
 
   // Implicits!
-  implicit val timeout = 3000
+  implicit val timeout: Int = 3000
   def setTimeout(f: () => Unit)(implicit timeout: Int) = f()
 
   setTimeout(() => println("timeout"))// other arg list injected by the compiler
@@ -98,7 +98,7 @@ object ScalaRecap extends App {
     def greet: String = s"Hi, my name is $name"
   }
 
-  implicit def fromStringToPerson(name: String) = Person(name)
+  implicit def fromStringToPerson(name: String): Person = Person(name)
   "Peter".greet
   // fromStringToPerson("Peter").greet
 

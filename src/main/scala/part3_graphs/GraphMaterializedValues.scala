@@ -1,19 +1,18 @@
 package part3_graphs
 
-import akka.actor.ActorSystem
-import akka.stream.{ActorMaterializer, FlowShape, SinkShape}
-import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Keep, Sink, Source}
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.{ActorMaterializer, FlowShape, SinkShape}
+import org.apache.pekko.stream.scaladsl.{Broadcast, Flow, GraphDSL, Keep, Sink, Source}
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
 object GraphMaterializedValues extends App {
 
-  implicit val system = ActorSystem("GraphMaterializedValues")
-  // this line needs to be here for Akka < 2.6
-  // implicit val materializer: ActorMaterializer = ActorMaterializer()
+  implicit val system: ActorSystem = ActorSystem("GraphMaterializedValues")
+  // the ActorSystem also acts as an ActorMaterializer for stream components
 
-  val wordSource = Source(List("Akka", "is", "awesome", "rock", "the", "jvm"))
+  val wordSource = Source(List("Pekko", "is", "awesome", "rock", "the", "jvm"))
   val printer = Sink.foreach[String](println)
   val counter = Sink.fold[Int, String](0)((count, _) => count + 1)
 
@@ -25,7 +24,7 @@ object GraphMaterializedValues extends App {
 
   // step 1
   val complexWordSink = Sink.fromGraph(
-    GraphDSL.create(printer, counter)((printerMatValue, counterMatValue) => counterMatValue) { implicit builder => (printerShape, counterShape) =>
+    GraphDSL.createGraph(printer, counter)((printerMatValue, counterMatValue) => counterMatValue) { implicit builder => (printerShape, counterShape) =>
       import GraphDSL.Implicits._
 
       // step 2 - SHAPES
@@ -56,7 +55,7 @@ object GraphMaterializedValues extends App {
     val counterSink = Sink.fold[Int, B](0)((count, _) => count + 1)
 
     Flow.fromGraph(
-      GraphDSL.create(counterSink) { implicit builder => counterSinkShape =>
+      GraphDSL.createGraph(counterSink) { implicit builder => counterSinkShape =>
         import GraphDSL.Implicits._
 
         val broadcast = builder.add(Broadcast[B](2))

@@ -1,14 +1,13 @@
 package part3_graphs
 
-import akka.actor.ActorSystem
-import akka.stream._
-import akka.stream.scaladsl.{Broadcast, Concat, Flow, GraphDSL, RunnableGraph, Sink, Source}
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream._
+import org.apache.pekko.stream.scaladsl.{Broadcast, Concat, Flow, GraphDSL, RunnableGraph, Sink, Source}
 
 object OpenGraphs extends App {
 
-  implicit val system = ActorSystem("OpenGraphs")
-  // this line needs to be here for Akka < 2.6
-  // implicit val materializer: ActorMaterializer = ActorMaterializer()
+  implicit val system: ActorSystem = ActorSystem("OpenGraphs")
+  // the ActorSystem also acts as an ActorMaterializer for stream components
 
 
   /*
